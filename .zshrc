@@ -5,16 +5,14 @@
 #   Functions                   ZGC5QQ
 
 # uname should be readable in $uname 
-uname=$(uname)
-UNAME=$(uname)
-
-
-if [ -f `which powerline-daemon` ]; then
+sestatus | grep -Ei "current mode"
+upower -m -d |grep percentage | sort | uniq -f 1
+ if [ -f `which powerline-daemon` ]; then
   powerline-daemon -q
   POWERLINE_BASH_CONTINUATION=1
   POWERLINE_BASH_SELECT=1
   . /usr/share/powerline/bash/powerline.sh
-fi
+ fi
 #####   Defaults etc...             M0TZLS  #####
 
 # This is based on zshrc which came with Debian (Third option in wizard for new users.)
@@ -26,13 +24,16 @@ setopt hist_ignore_all_dups
 export HISTFILE=~/.zsh_history
 setopt INC_APPEND_HISTORY
 setopt SHARE_HISTORY
+## Homebrew |* Linuxbrew *
+export PATH="$HOME/.linuxbrew/bin:$PATH"
+export MANPATH="$HOME/.linuxbrew/share/man:$MANPATH"
+export INFOPATH="$HOME/.linuxbrew/share/info:$INFOPATH"
+
 
 # Set up the prompt
-autoload -Uz promptinit
 
 # Green for normal user and red for root and show exit status
 # if it's not 0. Thank you nyuszika7h
-promptinit
 autoload -Uz vcs_info
 autoload -Uz colors && colors
 setopt PROMPT_SUBST
@@ -77,7 +78,7 @@ zstyle ':completion:*:kill:*' command 'ps -u $USER -o pid,%cpu,tty,cputime,cmd'
 if [[ $UNAME != Darwin  ]] then;
     (who -H -w -u|head -n10&)
     (echo "")
-#    (last -10 -w -x&)
+    (last -10 -w -x&)
 fi
 
 if [[ $UNAME = Darwin ]]; then
@@ -180,7 +181,7 @@ export LSCOLORS=gxBxhxDxfxhxhxhxhxcxcx
 alias maken="make -j$NPROC"
 
 # Ensure that pkg-config paths are found
-#export PKG_CONFIG_PATH=$(which pkg-config)
+export PKG_CONFIG_PATH=$(which pkg-config)
 
 #####   Aliases                     RJ706I  #####
 
@@ -281,15 +282,15 @@ alias fgrep='fgrep -i --color=always'
 alias egrep='egrep -i --color=always'
 # some more ls aliases
 if [[ "$UNAME" != "Darwin" ]]; then
-    alias ll='ls -alFh --color=always' && alias la='ls -A --color=always' && alias l='ls -CF --color=always'
+    alias ll='ls -ALFH --color=always' && alias la='ls -A --color=always' && alias l='ls -CF --color=always'
 fi
 
-#if [[ $UNAME = Darwin ]]; then
-#    alias ls="ls -Gp"
-#    alias ll="ls -alFHGp"
-#    alias l="ls -CFGp"
-#    alias ssh-add="\ssh-add -D && \ssh-add -K"
-#fi
+if [[ $UNAME = Darwin ]]; then
+    alias ls="ls -Gp"
+    alias ll="ls -alFHGp"
+    alias l="ls -CFGp"
+    alias ssh-add="\ssh-add -D && \ssh-add -K"
+fi
 
 # Add an "alert" alias for long running commands.  Use like so:
 alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
@@ -297,9 +298,9 @@ alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo
 ## -- End of aliases which are saved from Ubuntu default bashrc. --
 
 # Copying command in Supybot (Internet.DNS)
-#alias dns="nslookup "
-#alias dns6="nslookup -type=AAAA "
-#alias nslookup6="nslookup -type=AAAA "
+alias dns="nslookup "
+alias dns6="nslookup -type=AAAA "
+alias nslookup6="nslookup -type=AAAA "
 
 # If I have nslookup6...
 alias dig6="dig AAAA "
@@ -332,10 +333,6 @@ alias gpg-fix-tty='export GPG_TTY=$(tty)'
 # gets GPG2 completion. See 
 # http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=666755
 compdef gpg2=gpg # LINUXMODDER_GREP LINUXMODDER_GREP_ALIAS
-
-# For locally installed mosh on remote server.
-alias lmosh="mosh --server=~/.local/bin/mosh-server "
-alias lmosha="mosh --server=~/.local/bin/mosh-server-alt "
 
 # Allow custom aliases to be put in .aliases or .zsh_aliases .
 
@@ -418,18 +415,8 @@ alias less="less -R "
 alias ssu="sudo su -"
 alias suu="su -"
 
-# Fedora Utils http://satya164.github.com/fedorautils/
-#alias fedorautils="\fedorautils -c"
-#alias fedorautils-install='su -c "curl http://download.opensuse.org/repositories/home:/satya164:/fedorautils/Fedora_17/home:satya164:fedorautils.repo -Lo /etc/yum.repos.d/fedorautils.repo && yum -y install fedorautils"'
-
 # ReSet Screen rss
 alias rss=reset
-
-# Who command which I use with Conky
-#alias cwho="who -H -w -u"
-
-ffmpeg is depreceated
-alias ffmpeg=avconv
 
 # FINEID
 alias ssh-add-sc="ssh-add -s $(find /usr/*lib -name 'opensc-pkcs11.so')"
@@ -446,9 +433,9 @@ alias python2-httpd="python2 -m SimpleHTTPServer"
 alias python3-httpd="python3 -m http.server"
 
 # Resetting different desktop environments
-#alias reset-kde="rm -rf ~/.kde4 ~/.kde"
-#alias reset-xfce4="rm -rf ~/.config/xfce4"
-#alias reset-matepanel="mate-panel --reset"
+alias reset-kde="rm -rf ~/.kde4 ~/.kde"
+alias reset-xfce4="rm -rf ~/.config/xfce4"
+alias reset-matepanel="mate-panel --reset"
 
 # Show date in ISO 8601 format
 #alias isodate='date -Is'
@@ -463,9 +450,9 @@ alias peminfo="openssl x509 -text -in"
 alias tmuxeattach="/proc/$(pgrep -o tmux)/exe attach"
 
 # Copy-paste mtr output more easily
-#alias mtrp="mtr -rwc 10"
-#alias mtrp4="mtr -rw4c 10"
-#alias mtrp6="mtr -rw6c 10"
+alias mtrp="mtr -rwc 10"
+alias mtrp4="mtr -rw4c 10"
+alias mtrp6="mtr -rw6c 10"
 
 # pip
 alias pip="python -m pip"
@@ -494,7 +481,7 @@ alias rmv="rsync -a --progress --remove-source-files"
 # Accept all cookies with Lynx, makes browsing easier and
 # every other browser does this too.
 alias lynx="lynx -accept_all_cookies"
-
+alias links="links -g"
 # Cat multiple files preserving filenames
 # via http://stackoverflow.com/a/7816490
 alias multicat='tail -n +1'
@@ -585,13 +572,13 @@ cd
 
 #This function removes and regenerates ssh host keys.
 
-#ssh-regen-host-keys () {
-#        rm /etc/ssh/ssh_host_*
-#        ssh-keygen -t dsa -N "" -C "linux.ameridea_dsa" -f /etc/ssh/ssh_host_dsa_key
-#        ssh-keygen -t rsa -N "" -C "linux.ameridea_rsa" -f /etc/ssh/ssh_host_rsa_key
-#        ssh-keygen -t ecdsa -N "" -C "linux.ameridea_ecdsa" -f /etc/ssh/ssh_host_ecdsa_key
-#        ssh-keygen -t ed25519 -N "" -C "linux.ameridea_ed25519" -f /etc/ssh/ssh_host_ed25519_key
-#}
+ssh-regen-host-keys () {
+        rm /etc/ssh/ssh_host_*
+        ssh-keygen -t dsa -N "" -C "linux.ameridea_dsa" -f /etc/ssh/ssh_host_dsa_key
+        ssh-keygen -t rsa -N "" -C "linux.ameridea_rsa" -f /etc/ssh/ssh_host_rsa_key
+        ssh-keygen -t ecdsa -N "" -C "linux.ameridea_ecdsa" -f /etc/ssh/ssh_host_ecdsa_key
+        ssh-keygen -t ed25519 -N "" -C "linux.ameridea_ed25519" -f /etc/ssh/ssh_host_ed25519_key
+}
 
 
 
@@ -610,6 +597,10 @@ fi
 github-add-pulls() {
     git config --add remote.origin.fetch '+refs/pull/*/head:refs/remotes/origin/pr/*'
     git config --add remote.upstream.fetch '+refs/pull/*/head:refs/remotes/upstream/-pr/*'
+    git config --global user.email linux-modder@users.no-reply.github.com
+    git config --global user.signingkey 0x5A88E539
+    git config --global user.name "Corey 'linuxmodder'  Sheldon"
+    git config --global gpg.program gpg2
 }
 
 # Get server SSL certificate fingerprint in MD5, SHA1 and SHA256.
@@ -641,3 +632,5 @@ serversslciphers() {
 sslgenpem () {
     openssl req -nodes -newkey rsa:4096 -keyout $1.pem -x509 -days 3650 -out $1.pem -subj "/CN=$2"
 }
+xscreensaver &
+
